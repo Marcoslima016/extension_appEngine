@@ -19,6 +19,32 @@
 				"command": "extension3.createNew",
 				"title": "create New"
 			}
+		],
+		"menus": {
+			"explorer/context": [
+				{
+					"command": "extension3.createNew",
+					"group": "navigation"
+				},
+				{
+					"command": "extension3createNewWithRename",
+					"group": "navigation"
+				}
+			]
+		},
+		"keybindings": [
+			{
+				"command": "extension3.createNew",
+				"key": "ctrl+alt+t",
+				"mac": "ctrl+alt+t",
+				"when": "editorTextFocus"
+			},
+			{
+				"command": "extension3.createNewWithRename",
+				"key": "ctrl+shift+t",
+				"mac": "ctrl+shift+t",
+				"when": "editorTextFocus"
+			}
 		]
 	},
 	"scripts": {

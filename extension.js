@@ -9,7 +9,6 @@ const changeCase = require("change-case");
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 
-
 function getWorkingPathDir(context, activeTextEditor, workspace) {
 	if (context) {
 		const { fsPath } = context;
@@ -21,6 +20,7 @@ function getWorkingPathDir(context, activeTextEditor, workspace) {
 		return workspace.rootPath;
 	}
 }
+
 async function replaceTextInFiles(
 	filePath,
 	templateName,
@@ -76,6 +76,7 @@ async function makeTemplateConfigJs(configFilePath) {
 	).toString("utf8");
 	await fs.writeFile(configFilePath, defaultConfigFile);
 }
+
 // Make a `.templates` folder in workspace and make sample templates in `.templates` folder
 async function makeSampleTemplate(templateRootPath) {
 	const defaultSampleTemplatesPath = path.resolve(
@@ -88,8 +89,6 @@ async function makeSampleTemplate(templateRootPath) {
 	await fs.copy(defaultSampleTemplatesPath, templateRootPath);
 }
 
-
-
 async function getDirectories(path) {
 	const fs = require('fs');
 	return fs.readdirSync(path).filter(function (file) {
@@ -101,10 +100,15 @@ async function getDirectories(path) {
 async function createNew(_context, isRenameTemplate) {
 	try {
 		const workspaceRootPath = vscode.workspace.rootPath;
+
 		const configFilePath = path.resolve(
 			workspaceRootPath,
 			"template.config.js"
 		);
+		console.log("configFilePath: " + path.resolve(
+			workspaceRootPath,
+			"template.config.js"
+		));
 
 		var teste = await getDirectories(".");
 
@@ -116,10 +120,17 @@ async function createNew(_context, isRenameTemplate) {
 		}
 
 		const config = require(configFilePath);
+
+
+
 		const templateRootPath = path.resolve(
 			workspaceRootPath,
 			config.templateRootPath || config.templatePath // deprecated `config.templatePath`
 		);
+		console.log("templateRootPath: " + path.resolve(
+			workspaceRootPath,
+			config.templateRootPath || config.templatePath // deprecated `config.templatePath`
+		));
 
 		// If not exist `config.templateRootPath`, make `.templates` folder and make sample templates in `.templates`
 		if (!(await fs.pathExists(templateRootPath))) {
@@ -134,6 +145,20 @@ async function createNew(_context, isRenameTemplate) {
 
 		const templatePaths = await fs.readdir(templateRootPath);
 
+
+		//########################
+		const testeDir = await fs.readdir(".");
+
+		const templateRootPath2 = path.resolve(
+			workspaceRootPath,
+			// deprecated `config.templatePath`
+		);
+
+		const dstPath2 = path.resolve(workingPathDir);  /// <<<<<<<<<<<<<<<<<<
+
+		var point = "";
+		//########################
+
 		const templateName = await vscode.window.showQuickPick(templatePaths, {
 			placeHolder: "Choose a template"
 		});
@@ -145,6 +170,7 @@ async function createNew(_context, isRenameTemplate) {
 
 		// Copy a template to path
 		const srcPath = path.resolve(templateRootPath, templateName);
+		console.log("source path: " + path.resolve(templateRootPath, templateName));
 
 		// Input template name from user
 		const dstTemplateName = isRenameTemplate
@@ -155,6 +181,9 @@ async function createNew(_context, isRenameTemplate) {
 			: templateName;
 
 		const dstPath = path.resolve(workingPathDir, dstTemplateName);
+		console.log("dst path: " + path.resolve(workingPathDir, dstTemplateName));
+
+
 		await fs.copy(srcPath, dstPath);
 		replaceTextInFiles(
 			dstPath,
