@@ -6,6 +6,8 @@ const path = require("path");
 const fs = require("fs-extra");
 const changeCase = require("change-case");
 
+import * as classCreateImports from './extension/create_imports';
+
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 
@@ -96,7 +98,8 @@ async function getDirectories(path) {
 	});
 }
 
-
+///[=========================================== CREATE NEW ===========================================]
+///[==================================================================================================]
 async function createNew(_context, isRenameTemplate) {
 	try {
 		const workspaceRootPath = vscode.workspace.rootPath;
@@ -155,8 +158,10 @@ async function createNew(_context, isRenameTemplate) {
 		);
 
 		const dstPath2 = path.resolve(workingPathDir);  /// <<<<<<<<<<<<<<<<<<
+		const testeDir2 = await fs.readdir(dstPath2);
 
 		var point = "";
+
 		//########################
 
 		const templateName = await vscode.window.showQuickPick(templatePaths, {
@@ -198,6 +203,79 @@ async function createNew(_context, isRenameTemplate) {
 	}
 }
 
+///[========================================== createImports =========================================]
+///[==================================================================================================]
+
+
+async function createImports(_context, isRenameTemplate) {
+	try {
+		const workspaceRootPath = vscode.workspace.rootPath;
+
+		const config = require(configFilePath);
+
+		const templateRootPath = path.resolve(
+			workspaceRootPath,
+			config.templateRootPath || config.templatePath // deprecated `config.templatePath`
+		);
+
+
+		const workingPathDir = getWorkingPathDir(
+			_context,
+			vscode.window.activeTextEditor,
+			vscode.workspace
+		);
+
+		const templatePaths = await fs.readdir(templateRootPath);
+
+
+		//########################
+		const testeDir = await fs.readdir(".");
+
+		const templateRootPath2 = path.resolve(
+			workspaceRootPath,
+			// deprecated `config.templatePath`
+		);
+
+		const dstPath2 = path.resolve(workingPathDir);  /// <<<<<<<<<<<<<<<<<<
+		const testeDir2 = await fs.readdir(dstPath2);
+
+		var point = "";
+
+		// classCreateImports.
+
+		//########################
+
+		const templateName = "fileImports";
+
+		// Copy a template to path
+		const srcPath = path.resolve(templateRootPath, templateName);
+
+		// Input template name from user
+		const dstTemplateName = isRenameTemplate
+			? await vscode.window.showInputBox({
+				prompt: "Input a template name",
+				value: templateName
+			})
+			: templateName;
+
+		const dstPath = path.resolve(workingPathDir, dstTemplateName);
+
+		await fs.copy(srcPath, dstPath);
+		replaceTextInFiles(
+			dstPath,
+			dstTemplateName,
+			config.replaceFileTextFn,
+			config.replaceFileNameFn
+		);
+
+		vscode.window.showInformationMessage("Imports criados!");
+
+
+	} catch (e) {
+		console.error(e.stack);
+		vscode.window.showErrorMessage(e.message);
+	}
+}
 /**
  * @param {vscode.ExtensionContext} context
  */
@@ -218,24 +296,7 @@ function activate(context) {
 	);
 }
 
-// function activate(context) {
 
-// 	// Use the console to output diagnostic information (console.log) and errors (console.error)
-// 	// This line of code will only be executed once when your extension is activated
-// 	console.log('Congratulations, your extension "extension3" is now active!');
-
-// 	// The command has been defined in the package.json file
-// 	// Now provide the implementation of the command with  registerCommand
-// 	// The commandId parameter must match the command field in package.json
-// 	let disposable = vscode.commands.registerCommand('extension3.helloWorld', function () {
-// 		// The code you place here will be executed every time your command is executed
-
-// 		// Display a message box to the user
-// 		vscode.window.showInformationMessage('Hello World from extension3!');
-// 	});
-
-// 	context.subscriptions.push(disposable);
-// }
 exports.activate = activate;
 
 // this method is called when your extension is deactivated
