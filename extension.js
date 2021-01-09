@@ -231,35 +231,43 @@ async function createImports(_context, isRenameTemplate) {
 
 
 
-		//########################
-
+		//####################################################################
 
 		const dstPath2 = path.resolve(workingPathDir);  /// <<<<<<<<<<<<<<<<<<
 		const listaArquivos = await fs.readdir(dstPath2); /// <<<<<<<<<<<<<<<<<<
 
-
 		var filterFilesArray = [];
+		var txtImport = "";
+
+		//------------ ARQUIVOS ------------
 
 		listaArquivos.forEach(function (item, i) {
 			var fileSplit = item.split(".");
-
 			if (fileSplit.length <= 1) {
-
 			} else {
+				txtImport = txtImport + "  export '" + item + "';";
 				//adiciona nome do arquivo ao array
-				filterFilesArray.push("");
+				filterFilesArray.push(txtImport);
 			}
 		});
 
-		var testtt = filterFilesArray;
+		//------------- PASTAS -------------
+
+		listaArquivos.forEach(function (item, i) {
+			var fileSplit = item.split(".");
+			if (fileSplit.length <= 1) {
+				txtImport = txtImport + "  export './" + item + "/" + item + ".imports.dart" + "';";
+			}
+		});
+
+		//----------------------------------
+		var testtt = txtImport;
 
 		var point = "";
 
-		// classCreateImports.
+		//####################################################################
 
-		//########################
-
-		const templateName = "fileImports";
+		const templateName = "file_imports.dart";
 
 		// Copy a template to path
 		const srcPath = path.resolve(templateRootPath, templateName);
@@ -273,6 +281,8 @@ async function createImports(_context, isRenameTemplate) {
 				value: templateName
 			})
 			: templateName;
+
+
 
 		const dstPath = path.resolve(workingPathDir, dstTemplateName);
 
