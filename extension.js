@@ -239,31 +239,40 @@ async function createImports(_context, isRenameTemplate) {
 		var filterFilesArray = [];
 		var txtImport = "";
 
-		//------------ ARQUIVOS ------------
+
+		//------------ GET NOME DA PASTA ------------
+
+
+		var splitDir = dstPath2.split("/");
+		var nomePasta = splitDir.pop();
+
+		var point;
+
+		//---------------- ARQUIVOS ----------------
 
 		listaArquivos.forEach(function (item, i) {
 			var fileSplit = item.split(".");
 			if (fileSplit.length <= 1) {
 			} else {
-				txtImport = txtImport + "  export '" + item + "';";
+				txtImport = txtImport + "export '" + item + "'; \n";
 				//adiciona nome do arquivo ao array
 				filterFilesArray.push(txtImport);
 			}
 		});
 
-		//------------- PASTAS -------------
+		//----------------- PASTAS -----------------
 
 		listaArquivos.forEach(function (item, i) {
 			var fileSplit = item.split(".");
 			if (fileSplit.length <= 1) {
-				txtImport = txtImport + "  export './" + item + "/" + item + ".imports.dart" + "';";
+				txtImport = txtImport + "export './" + item + "/" + item + ".imports.dart" + "'; \n";
 			}
 		});
 
-		//----------------------------------
+		//-----------------------------------------
+
 		var testtt = txtImport;
 
-		var point = "";
 
 		//####################################################################
 
@@ -272,22 +281,19 @@ async function createImports(_context, isRenameTemplate) {
 		// Copy a template to path
 		const srcPath = path.resolve(templateRootPath, templateName);
 
-
-
 		// Input template name from user
-		const dstTemplateName = isRenameTemplate
-			? await vscode.window.showInputBox({
-				prompt: "Input a template name",
-				value: templateName
-			})
-			: templateName;
+		// const dstTemplateName = await vscode.window.showInputBox({
+		// 	prompt: "Input a template name",
+		// 	value: templateName
+		// });
 
-
+		const dstTemplateName = nomePasta + ".imports" + ".dart";
 
 		const dstPath = path.resolve(workingPathDir, dstTemplateName);
 
 		await fs.copy(srcPath, dstPath);
-		replaceTextInFiles(
+		replaceTextInFiles2(
+			txtImport,
 			dstPath,
 			dstTemplateName,
 			config.replaceFileTextFn,
@@ -296,13 +302,64 @@ async function createImports(_context, isRenameTemplate) {
 
 		vscode.window.showInformationMessage("Imports criados!");
 
-
 	} catch (e) {
 		console.error(e.stack);
 		vscode.window.showErrorMessage(e.message);
 	}
 }
 
+
+
+
+async function replaceTextInFiles2(
+	newFileTxt,
+	filePath,
+	templateName,
+	replaceFileTextFn,
+	replaceFileNameFn
+) {
+	try {
+		const stat = await fs.stat(filePath);
+		if (stat.isDirectory()) {
+			const files = await fs.readdir(filePath);
+			await Promise.all(
+				files.map(async entryFilePath =>
+					replaceTextInFiles(
+						path.resolve(filePath, entryFilePath),
+						templateName,
+						replaceFileTextFn,
+						replaceFileNameFn
+					)
+				)
+			);
+		} else {
+			const fileText = (await fs.readFile(filePath)).toString("utf8");
+			if (typeof replaceFileTextFn === "function") {
+				await fs.writeFile(
+					filePath,
+					replaceFileTextFn(newFileTxt, templateName, { changeCase, path })
+				);
+
+				/**
+				 * Rename file
+				 * @ref https://github.com/stegano/vscode-template/issues/4
+				 */
+				if (typeof replaceFileNameFn === "function") {
+					const filePathInfo = path.parse(filePath);
+					const { base: originalFilename } = filePathInfo;
+					const filename = replaceFileNameFn(originalFilename, templateName, {
+						changeCase,
+						path
+					});
+					const _filePath = path.resolve(filePathInfo.dir, filename);
+					filename && fs.renameSync(filePath, _filePath);
+				}
+			}
+		}
+	} catch (e) {
+		console.error(e);
+	}
+}
 
 
 
