@@ -78,7 +78,6 @@ async function makeTemplateConfigJs(configFilePath) {
 	await fs.writeFile(configFilePath, defaultConfigFile);
 }
 
-// Make a `.templates` folder in workspace and make sample templates in `.templates` folder
 async function makeSampleTemplate(templateRootPath) {
 	const defaultSampleTemplatesPath = path.resolve(
 		__dirname,
@@ -206,7 +205,7 @@ async function createNew(_context, isRenameTemplate) {
 ///[==================================================================================================]
 
 
-async function createImports(_context, isRenameTemplate) {
+async function setImports(_context, isRenameTemplate) {
 	try {
 		const workspaceRootPath = vscode.workspace.rootPath;
 
@@ -242,11 +241,8 @@ async function createImports(_context, isRenameTemplate) {
 
 		//------------ GET NOME DA PASTA ------------
 
-
 		var splitDir = dstPath2.split("/");
 		var nomePasta = splitDir.pop();
-
-		var point;
 
 		//---------------- ARQUIVOS ----------------
 
@@ -282,12 +278,16 @@ async function createImports(_context, isRenameTemplate) {
 		const srcPath = path.resolve(templateRootPath, templateName);
 
 		// Input template name from user
-		// const dstTemplateName = await vscode.window.showInputBox({
-		// 	prompt: "Input a template name",
-		// 	value: templateName
-		// });
+		const especialName = await vscode.window.showInputBox({
+			prompt: "Se desejar, informe um nome personalizado para o import",
+			value: ""
+		});
 
-		const dstTemplateName = nomePasta + ".imports" + ".dart";
+		var dstTemplateName = nomePasta + ".imports" + ".dart";
+
+		if (especialName != "" && especialName != undefined) {
+			dstTemplateName = especialName + "_" + nomePasta + ".imports" + ".dart";
+		}
 
 		const dstPath = path.resolve(workingPathDir, dstTemplateName);
 
@@ -307,8 +307,6 @@ async function createImports(_context, isRenameTemplate) {
 		vscode.window.showErrorMessage(e.message);
 	}
 }
-
-
 
 
 async function replaceTextInFiles2(
@@ -382,8 +380,8 @@ function activate(context) {
 		vscode.commands.registerCommand("extension3.createNewWithRename", context =>
 			createNew(context, true)
 		),
-		vscode.commands.registerCommand("extension3.createImports", context =>
-			createImports(context, false)
+		vscode.commands.registerCommand("extension3.setImports", context =>
+			setImports(context, false)
 		),
 	);
 }

@@ -27,9 +27,12 @@ module.exports = {
   },
   replaceFileNameFn: (fileName, templateName, utils) => {
     const { path } = utils;
+
     // @see https://nodejs.org/api/path.html#path_path_parse_path
     const { base } = path.parse(fileName);
+
     // You can change the file name
-    return base;
+    // return base;
+    return base.replace(/__templateName__/gm, templateName);
   }
 };

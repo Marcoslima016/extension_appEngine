@@ -11,18 +11,23 @@
 	],
 	"activationEvents": [
 		"onCommand:extension3.createNew",
-		"onCommand:extension3.createImports"
+		"onCommand:extension.createNewWithRename",
+		"onCommand:extension3.setImports"
 	],
 	"main": "./extension.js",
 	"contributes": {
 		"commands": [
 			{
 				"command": "extension3.createNew",
-				"title": "create New"
+				"title": "SegDev: create New"
 			},
 			{
-				"command": "extension3.createImports",
-				"title": "create Imports"
+				"command": "extension3.createNewWithRename",
+				"title": "SegDev: Create New (with rename)"
+			},
+			{
+				"command": "extension3.setImports",
+				"title": "SegDev: Set Imports"
 			}
 		],
 		"menus": {
@@ -32,8 +37,12 @@
 					"group": "navigation"
 				},
 				{
-					"command": "extension3createNewWithRename",
+					"command": "extension3.createNewWithRename",
 					"group": "navigation"
+				},
+				{
+					"command": "extension3.setImports",
+					"group": "z_commands"
 				}
 			]
 		},
