@@ -6,7 +6,6 @@ const path = require("path");
 const fs = require("fs-extra");
 const changeCase = require("change-case");
 
-import * as classCreateImports from './extension/create_imports';
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -211,6 +210,10 @@ async function createImports(_context, isRenameTemplate) {
 	try {
 		const workspaceRootPath = vscode.workspace.rootPath;
 
+		const configFilePath = path.resolve(
+			workspaceRootPath,
+			"template.config.js"
+		);
 		const config = require(configFilePath);
 
 		const templateRootPath = path.resolve(
@@ -225,19 +228,18 @@ async function createImports(_context, isRenameTemplate) {
 			vscode.workspace
 		);
 
-		const templatePaths = await fs.readdir(templateRootPath);
+
 
 
 		//########################
-		const testeDir = await fs.readdir(".");
 
-		const templateRootPath2 = path.resolve(
-			workspaceRootPath,
-			// deprecated `config.templatePath`
-		);
 
 		const dstPath2 = path.resolve(workingPathDir);  /// <<<<<<<<<<<<<<<<<<
-		const testeDir2 = await fs.readdir(dstPath2);
+		const testeDir2 = await fs.readdir(dstPath2); /// <<<<<<<<<<<<<<<<<<
+
+		var testeee = testeDir2.forEach(function (nome, i) {
+			console.log('[forEach]', nome, i);
+		});
 
 		var point = "";
 
@@ -249,6 +251,8 @@ async function createImports(_context, isRenameTemplate) {
 
 		// Copy a template to path
 		const srcPath = path.resolve(templateRootPath, templateName);
+
+
 
 		// Input template name from user
 		const dstTemplateName = isRenameTemplate
@@ -276,9 +280,15 @@ async function createImports(_context, isRenameTemplate) {
 		vscode.window.showErrorMessage(e.message);
 	}
 }
+
+
+
+
 /**
  * @param {vscode.ExtensionContext} context
  */
+
+
 
 
 function activate(context) {
@@ -292,7 +302,10 @@ function activate(context) {
 		),
 		vscode.commands.registerCommand("extension3.createNewWithRename", context =>
 			createNew(context, true)
-		)
+		),
+		vscode.commands.registerCommand("extension3.createImports", context =>
+			createImports(context, false)
+		),
 	);
 }
 

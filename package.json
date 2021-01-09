@@ -10,7 +10,8 @@
 		"Other"
 	],
 	"activationEvents": [
-		"onCommand:extension3.createNew"
+		"onCommand:extension3.createNew",
+		"onCommand:extension3.createImports"
 	],
 	"main": "./extension.js",
 	"contributes": {
@@ -18,6 +19,10 @@
 			{
 				"command": "extension3.createNew",
 				"title": "create New"
+			},
+			{
+				"command": "extension3.createImports",
+				"title": "create Imports"
 			}
 		],
 		"menus": {
