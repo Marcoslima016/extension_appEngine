@@ -244,6 +244,16 @@ async function setImports(_context, isRenameTemplate) {
 		var splitDir = dstPath2.split("/");
 		var nomePasta = splitDir.pop();
 
+		// var fs = require('fs');
+
+		try {
+			// var data = fs.readFileSync('modulo.config.txt', 'utf8');
+			var data = await fs.readFile(dstPath2 + '/modulo.config.txt', 'utf8');
+			console.log(data.toString());
+		} catch (e) {
+			console.log('Error:', e.stack);
+		}
+
 		//---------------- ARQUIVOS ----------------
 
 		listaArquivos.forEach(function (item, i) {
