@@ -235,11 +235,23 @@ async function createImports(_context, isRenameTemplate) {
 
 
 		const dstPath2 = path.resolve(workingPathDir);  /// <<<<<<<<<<<<<<<<<<
-		const testeDir2 = await fs.readdir(dstPath2); /// <<<<<<<<<<<<<<<<<<
+		const listaArquivos = await fs.readdir(dstPath2); /// <<<<<<<<<<<<<<<<<<
 
-		var testeee = testeDir2.forEach(function (nome, i) {
-			console.log('[forEach]', nome, i);
+
+		var filterFilesArray = [];
+
+		listaArquivos.forEach(function (item, i) {
+			var fileSplit = item.split(".");
+
+			if (fileSplit.length <= 1) {
+
+			} else {
+				//adiciona nome do arquivo ao array
+				filterFilesArray.push("");
+			}
 		});
+
+		var testtt = filterFilesArray;
 
 		var point = "";
 
